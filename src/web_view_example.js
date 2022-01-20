@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Text, View, StyleSheet, BackHandler, Alert } from "react-native";
+import { Text, View, StyleSheet, BackHandler, Alert,Linking } from "react-native";
 import { WebView } from 'react-native-webview';
 
 
@@ -47,6 +47,24 @@ const WebViewExample = () => {
     ref={webView}
     source={{ uri: 'https://www.venuebook.online/' }} 
     onNavigationStateChange={navState => setCanGoBack(navState.canGoBack)}
+    javaScriptEnabled={true}
+    setSupportMultipleWindows={true}
+    onShouldStartLoadWithRequest={request => {if (!request || !request.url) {
+      return true;
+    }
+  
+    // list of schemas we will allow the webview
+    // to open natively
+    if(request.url.match('phone'))
+    {
+      Linking.openURL(request.url).catch(er => {
+        console.log('Failed to open Link:', er.message);
+      });
+      return false;
+    }
+  
+    // let everything else to the webview
+    return true;}}
     /> 
   );
 };
